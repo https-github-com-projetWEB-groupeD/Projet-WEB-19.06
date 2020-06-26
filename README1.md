@@ -6,5 +6,5 @@ Daniela Ribeiro Castro
 Gabriela Moreno de Andrade
 Baptiste Tiberghien
 Nicolas Dumas
-Tristan Grt
+Tristan Greatti
 Philippe Berton
