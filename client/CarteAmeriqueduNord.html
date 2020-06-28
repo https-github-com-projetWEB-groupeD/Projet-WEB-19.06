@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>  
+<!DOCTYPE html>  
 
 <script src="leaflet.js"> // Bibliothèque Leaflet : http://leafletjs.com/ </script>
 
@@ -64,7 +64,7 @@
          <option>Trinidad and Tobago</option>
          <option>United States</option>
         </select>
-        <button id="bouton">Decouvrir</button>
+        <button id="bouton">Recherche</button>
       </fieldset> 
 		<td>
       <fieldset id='searchbar'>
@@ -82,8 +82,8 @@
   <!-- Zone pour l'affichage dynamique des descriptions -->
 		 <div id='error_msg'></div>
 		 <fieldset id='country_data'>
-			 <legend>Informations sur le pays</legend>
-			 <img id='drapeau' alt='Non trouvée' draggable = "true"/>
+			 <legend>A propos du pays</legend>
+			 <img id='drapeau' alt='Drapeau non trouvée' draggable = "true"/>
 			 <div>
 				 <span><b>Nom : </b></span><span id='country_name'></span>
 				 <br>
@@ -96,15 +96,8 @@
 				 <br>
 				 <span><b>Longitude : </b></span><span id='longitude'></span>
 				 <br>
-				 <span><b>Population : </b></span><span id='pop'></span>
-				 <br>
-				 <span><b>Superficie : </b></span><span id='superficie'></span>
-				 <br>
-         <span><b>PIB : </b></span><span id='PIB'></span>
-         <br>
-         <span><b>Monnaie : </b></span><span id='monnaie'></span>
-         <br>
 				 <a target = "_blank" id = "wp"></a>
+ 
         </div>
 			 </div>
 		 </fieldset>
@@ -124,7 +117,6 @@ document.getElementById('demandeinfo').addEventListener('click',showinfo);
 document.getElementById('lessinfo').addEventListener('click',hideinfo);
 
 // Création d'une carte dans la balise div "map",
-// et position de la vue sur un point donné et un niveau de zoom
 var map = L.map('map').setView([25,-70], 2.5);
 
 // Ajout d'une couche de dalles OpenStreetMap
@@ -140,7 +132,7 @@ window.moreinfo.style.display = 'none';
 
 
 
-//Crétion de 2 types d'icones de marqueur (un jaune et un par défaut)
+//Crétion de 2 types d'icones de marqueur
 var red_icon = L.icon({
     iconUrl: 'images/marker-icon-red.png',
     iconAnchor: [12,41],
@@ -215,11 +207,7 @@ function OnMarkerClick (e) {
        window.capital.textContent = data.capital;
        window.latitude.textContent = data.latitude.toFixed(3);
        window.longitude.textContent = data.longitude.toFixed(3);
-       window.pop.textContent = data.pop;
-       window.superficie.textContent = data.superficie;
-	   window.drapeau.src = data.drapeau;
-     window.PIB.textContent= data.PIB;
-     window.monnaie.textContent=data.monnaie;
+       window.drapeau.src = data.drapeau;
        window.wp.textContent = 'https://en.wikipedia.org/wiki/'+data.wp;
        window.wp.href = 'https://en.wikipedia.org/wiki/'+data.wp;
      }
@@ -265,11 +253,7 @@ function envoiformulaireecrit(e) {
        window.longitude.textContent = data.longitude.toFixed(3);
        window.wp.textContent = 'https://en.wikipedia.org/wiki/'+data.wp;
        window.wp.href = 'https://en.wikipedia.org/wiki/'+data.wp;
-       window.pop.textContent = data.pop;
-       window.superficie.textContent = data.superficie;
-	   window.drapeau.src = data.drapeau;
-     window.PIB.textContent= data.PIB;
-     window.monnaie.textContent=data.monnaie;
+       window.drapeau.src = data.drapeau;
      }
      // affichage d'un message d'erreur
      else {
@@ -277,7 +261,7 @@ function envoiformulaireecrit(e) {
         window.error_msg.innerHTML = this.statusText;
      }
 	 
-   //On met en surbrillance(jaune) le marqueur du pays sélectionné
+   //On met en surbrillance le marqueur du pays sélectionné
    for (var i = 0; i<markers.length; i++) {
 	if (markers[i].idnum == ps){
 		markers[i].setIcon(red_icon);
@@ -317,10 +301,6 @@ function envoiformulaireselect(e) {
        window.latitude.textContent = data.latitude.toFixed(3);
        window.longitude.textContent = data.longitude.toFixed(3);
        window.drapeau.src = data.drapeau;
-       window.pop.textContent = data.pop;
-       window.superficie.textContent = data.superficie;
-       window.PIB.textContent= data.PIB;
-     window.monnaie.textContent=data.monnaie;
        window.wp.textContent = 'https://en.wikipedia.org/wiki/'+data.wp;
        window.wp.href = 'https://en.wikipedia.org/wiki/'+data.wp;
        
