@@ -1,7 +1,7 @@
-﻿/* fond de page */
+/* fond de page */
 body {
 /* Seagreen */
-  background-image: linear-gradient(180deg, DarkSalmon, LightSteelBlue, LightSlateGray);
+  background: #223150;
   background-size: 100%;
   background-repeat: no-repeat;
   color: white;
@@ -15,22 +15,28 @@ body {
 /* bandeau de titre */
 h1 { 
   color: MidnightBlue;
-  font-size: 220%;
+  text-align: center;
+  text-decoration: none;
+  font-size: 200%;
   border: none;
   box-shadow: none;
   background-color: rgba(255,255,255,0.3);
-  border-top: 3px solid rgba(255,255,255,0.6);
-  border-bottom: 3px solid rgba(255,255,255,0.6);
-  text-shadow: 3px 0px 3px SlateGray;
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
+  border-top: 2px solid rgba(255,255,255,0.6);
+  border-bottom: 2px solid rgba(255,255,255,0.6);
+  padding-top: 0.8em;
+  padding-bottom: 0.8em;
 }
 
 /* contenu de la page */
-body > * {   padding-left: 10px; }
+body > * {
+  padding-left: 5px;
+}
 
 /* polices de caractères */
-body { font-family: Calibri, sans-serif; }
+body {
+  font-family: Calibri, sans-serif;
+  font-size: 14px;
+}
 
 /* positionnement des champs */
 label { display: block; }
@@ -39,21 +45,20 @@ label span { display: inline-block; width: 5em; height: 1.5em; }
 a.delete:hover {
   color: red;
 }
-#map { height: 400px; width: 600px; }
+
 
 legend {
-  font-size: 150%;
+  font-size: 100%;
   font-weight: bold;
   font-family: 'Assistant', sans-serif;
-  color: DarkSlateGray;
+  color: MidnightBlue;
 }
 
 fieldset {
-  border: 2px outset black;
-  border-radius: 3px;
-  box-shadow: 5px 5px 3px SlateGray;
-  font-size: 150%;
-  background-color: Silver;
+  border: 2px outset white;
+  border-radius: 2px;
+  font-size: 130%;
+  background-color: Grey;
 }
 
 table {
@@ -61,74 +66,12 @@ table {
 }
 
 span[id=country_name] {
-  font-size: 120%;
-  color: black;
+  font-size: 130%;
+  color: MidnightBlue;
 }
 
 button {
   width:110px;
   padding:6px 0 6px 0;
   font:Bold 13px Arial;
-  background:#d34836;
-  color:#fff;
-  border-radius:4px;
-  border:none;
-  transition: all 0.3s ease 0s;
-  cursor: pointer;
-  margin: 5px;
-}
-
-button:hover {
-  background:red;
-  box-shadow: 0 0 10px black;
-  transition: all 0.3s ease 0s;
-}
-
-a.delete:hover {
-  color: red;
-}
-#map { 
-  height: 600px; 
-  width: 1000px; 
-  border: 3px solid black;
-}
-#country_data {
-  width:500px;
-}
-#selectchoice_field {
-  width: 200px;
-  position: fixed;
-  top: 140px;
-  right: 20px;
-  text-align: : center;
-  color: DarkSlateGrey;
-
-}
-#select_type {
-  margin: 3px;
-  background: White;
-  border: 3px black;
-  border-radius: 3px;
-  color: DarkSlateGrey;
-
-
-}
-#pays_select_field {
-  width: 200px;
-  position: fixed;
-  top: 270px;
-  right: 20px;
-  text-align: center;
-  margin: 3px;
-  font-size: 150%;
-  color: DarkSlateGrey;
-}
-#searchbar{
-  width: 200px;
-  position: fixed;
-  top: 270px;
-  right: 20px;
-  text-align: center;
-  margin: 3px;
-  color: DarkSlateGrey;
-}
+  background:#fff;
