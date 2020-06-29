@@ -30,8 +30,8 @@
         <span title="popup">Type de sélection</span>
         <br>
         <select id='select_type' name="select_type"> 
-         <option>Recherche</option>
          <option>Menu déroulant</option>
+	 <option>Recherche</option>
         </select>
         <button id="bouton_select">Choisir</button>
       </fieldset>
@@ -96,6 +96,10 @@
 				 <br>
 				 <span><b>Longitude : </b></span><span id='longitude'></span>
 				 <br>
+		 		 <span><b>Surface : </b></span><span id='area'></span><span> km<sup>2</sup></span>
+         			 <br>
+         			 <span><b>Monnaie : </b></span><span id='currency'></span>
+         			 <br>
 				 <a target = "_blank" id = "wp"></a>
  
         </div>
@@ -207,6 +211,8 @@ function OnMarkerClick (e) {
        window.capital.textContent = data.capital;
        window.latitude.textContent = data.latitude.toFixed(3);
        window.longitude.textContent = data.longitude.toFixed(3);
+       window.currency.textContent = data.currency;
+       window.area.textContent = data.area;						     
        window.drapeau.src = data.drapeau;
        window.wp.textContent = 'https://en.wikipedia.org/wiki/'+data.wp;
        window.wp.href = 'https://en.wikipedia.org/wiki/'+data.wp;
@@ -251,6 +257,8 @@ function envoiformulaireecrit(e) {
        window.capital.textContent = data.capital;
        window.latitude.textContent = data.latitude.toFixed(3);
        window.longitude.textContent = data.longitude.toFixed(3);
+       window.currency.textContent = data.currency;
+       window.area.textContent = data.area;
        window.wp.textContent = 'https://en.wikipedia.org/wiki/'+data.wp;
        window.wp.href = 'https://en.wikipedia.org/wiki/'+data.wp;
        window.drapeau.src = data.drapeau;
@@ -300,6 +308,8 @@ function envoiformulaireselect(e) {
        window.capital.textContent = data.capital;
        window.latitude.textContent = data.latitude.toFixed(3);
        window.longitude.textContent = data.longitude.toFixed(3);
+       window.currency.textContent = data.currency;
+       window.area.textContent = data.area;
        window.drapeau.src = data.drapeau;
        window.wp.textContent = 'https://en.wikipedia.org/wiki/'+data.wp;
        window.wp.href = 'https://en.wikipedia.org/wiki/'+data.wp;
