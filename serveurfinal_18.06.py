@@ -145,6 +145,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
       attributs["longitude"] = r['longitude']
       attributs["currency"] = r['currency']
       attributs["area"] = r['area']
+      attributs["drapeau"] = 'flags/' + r['drapeau']
       attributs["wp"] = country
       body = json.dumps(attributs)
       
