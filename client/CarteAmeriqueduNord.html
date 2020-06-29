@@ -1,0 +1,357 @@
+<!DOCTYPE html>  
+
+<script src="leaflet.js"> // Bibliothèque Leaflet : http://leafletjs.com/ </script>
+
+<title>Carte de l'Amérique du Nord</title>
+<link rel="stylesheet" type="text/css" href="leaflet.css"/> 
+<link rel="stylesheet" type="text/css" href="style1.css"/>
+
+
+<meta charset="utf-8">
+
+<head>
+<link href="https://fonts.googleapis.com/css?family=Assistant&display=swap" rel="stylesheet">
+</head>
+
+<!-- Récupération de la liste des pays au chargement de la page -->
+<body onload="load_data();" onKeyPress="if (event.keyCode == 13) envoiformulaire()">
+  <h1>Carte de l'Amérique du Nord</h1>
+  <div>
+  <table border='0'>
+    <tr>
+	  <td>
+  <!-- Zone pour l'insertion de la carte OSM via Leaflet -->
+  <div id="map" style="margin-bottom:1.33em"></div>  
+	  </td>
+	  <td>
+	  <table border='0'>
+	  <tr>
+      <fieldset id='selectchoice_field'>
+        <span title="popup">Type de sélection</span>
+        <br>
+        <select id='select_type' name="select_type"> 
+         <option>Menu déroulant</option>
+         <option>Recherche</option>
+        </select>
+        <button id="bouton_select">Choisir</button>
+      </fieldset>
+      
+        <fieldset id='pays_select_field'>
+        <span title="popup">Pays</span>
+        <br>
+        <select id='pays_select' name="pays_select"> 
+         <option>Antigua and Barbuda</option>
+         <option>The Bahamas</option>
+         <option>Barbados</option>
+         <option>Belize</option>
+         <option>Canada</option>
+         <option>Costa Rica</option>
+         <option>Cuba</option>
+         <option>Dominica</option>
+         <option>Dominican Republic</option>
+         <option>Grenada</option>
+         <option>Guatemala</option>
+         <option>Haiti</option>
+         <option>Honduras</option>
+         <option>Jamaica</option>
+         <option>Mexico</option>
+         <option>Nicaragua</option>
+         <option>Panama</option>
+         <option>Saint Kitts and Nevis</option>
+         <option>Saint Lucia</option>
+         <option>Saint Vincent and the Grenadines</option>
+         <option>El Salvador</option>
+         <option>Trinidad and Tobago</option>
+         <option>United States</option>
+        </select>
+        <button id="bouton">Recherche</button>
+      </fieldset> 
+		<td>
+      <fieldset id='searchbar'>
+        <span title="popup">Pays</span>
+        <label for="pays"><input id="pays"></label>
+        <button id="envoiformulaire">Infos pays</button>
+      </fieldset>
+		 
+		</td>
+		<td>
+		 
+		</td> 
+	  </tr>
+	  <tr>
+  <!-- Zone pour l'affichage dynamique des descriptions -->
+		 <div id='error_msg'></div>
+		 <fieldset id='country_data'>
+			 <legend>A propos du pays</legend>
+			 <img id='drapeau' alt='Drapeau non trouvée' draggable = "true"/>
+			 <div>
+				 <span><b>Nom : </b></span><span id='country_name'></span>
+				 <br>
+				 <span><b>Capitale : </b></span><span id='capital'></span>
+				 <br>
+         <button id="demandeinfo">+</button>
+         <button id='lessinfo'>-</button>
+         <div id='moreinfo'>
+				 <span><b>Latitude : </b></span><span id='latitude'></span>
+				 <br>
+				 <span><b>Longitude : </b></span><span id='longitude'></span>
+				 <br>
+         <span><b>Surface : </b></span><span id='area'></span><span> km<sup>2</sup></span>
+         <br>
+         <span><b>Monnaie : </b></span><span id='currency'></span>
+         <br>
+				 <a target = "_blank" id = "wp"></a>
+ 
+        </div>
+			 </div>
+		 </fieldset>
+	  </tr>
+	  </table>
+	  </td>
+  </div>
+ </body>
+ 
+ 
+ <script>
+ 
+document.getElementById('envoiformulaire').addEventListener('click', envoiformulaireecrit);
+document.getElementById('bouton').addEventListener('click', envoiformulaireselect);
+document.getElementById('bouton_select').addEventListener('click',selectchoice);
+document.getElementById('demandeinfo').addEventListener('click',showinfo);
+document.getElementById('lessinfo').addEventListener('click',hideinfo);
+
+// Création d'une carte dans la balise div "map",
+var map = L.map('map').setView([25,-70], 2.5);
+
+// Ajout d'une couche de dalles OpenStreetMap
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+     }).addTo(map);
+
+// On cache le paragraphe des descriptions
+window.country_data.style.display = 'none';
+window.searchbar.style.display = 'none';
+window.pays_select_field.style.display = 'none';
+window.moreinfo.style.display = 'none';
+
+
+
+//Crétion de 2 types d'icones de marqueur
+var red_icon = L.icon({
+    iconUrl: 'images/marker-icon-red.png',
+    iconAnchor: [12,41],
+	popupAnchor: [0,-32],
+    shadowUrl: 'images/marker-shadow.png',
+    shadowAnchor: [12,41]
+});
+
+var default_icon = L.icon({
+    iconUrl: 'images/marker-icon.png',
+    iconAnchor: [12,41],
+	popupAnchor: [0,-32],
+    shadowUrl: 'images/marker-shadow.png',
+    shadowAnchor: [12,41]
+});
+
+//Liste des marqueurs
+var markers = [];
+var marker;
+
+// Fonction appelée au chargement de la page
+function load_data () {
+
+  // objet pour l'envoi d'une requête Ajax
+  var xhr = new XMLHttpRequest();
+
+  // fonction appelée lorsque la réponse à la requête (liste des lieux insolites) sera arrivée
+  xhr.onload = function() {
+
+    // transformation des données renvoyées par le serveur
+    // responseText est du type string, data est une liste
+    var data = JSON.parse(this.responseText);
+
+    // boucle sur les lieux
+    for ( n = 0; n < data.length; n++ ) {
+      // insertion d'un marqueur à la position du lieu,
+      // attachement d'une popup, capture de l'événement 'clic'
+      // ajout d'une propriété personnalisée au marqueur
+	  marker = L.marker([data[n].lat,data[n].lon], riseOnHover=true);
+      marker.addTo(map)
+       .bindPopup(data[n].name)
+       .addEventListener('click',OnMarkerClick)
+       .idnum = data[n].wp;
+	  markers[n] = marker;
+    }
+  };
+
+  // Envoi de la requête Ajax pour la récupération de la liste des lieux insolites
+  xhr.open('GET','/countries',true);
+  xhr.send();
+}
+
+// Fonction appelée lors d'un clic sur un marqueur
+function OnMarkerClick (e) {
+
+   var xhr = new XMLHttpRequest(); 
+
+   // requête au serveur
+   xhr.open('GET','/country/'+e.target.idnum,true);
+  
+   // fonction callback
+   xhr.onload = function() {
+	 // récupération des informations au format json
+     if ( this.status == 200 ) {
+       var data = JSON.parse(this.responseText);
+       window.error_msg.innerHTML = ''
+       window.country_data.style.display = 'block';
+       window.demandeinfo.style.display = 'block';
+       window.moreinfo.style.display = 'none';
+       window.lessinfo.style.display = 'none';
+       window.country_name.textContent = data.name;
+       window.capital.textContent = data.capital;
+       window.latitude.textContent = data.latitude.toFixed(3);
+       window.longitude.textContent = data.longitude.toFixed(3);
+       window.currency.textContent = data.currency;
+       window.area.textContent = data.area;
+       window.drapeau.src = data.drapeau;
+       window.wp.textContent = 'https://en.wikipedia.org/wiki/'+data.wp;
+       window.wp.href = 'https://en.wikipedia.org/wiki/'+data.wp;
+     }
+     // affichage d'un message d'erreur
+     else {
+        window.country_data.style.display = 'none';
+        window.error_msg.innerHTML = this.statusText;
+     }
+  };
+  xhr.send();
+  
+  for (var i = 0; i<markers.length; i++) {
+	markers[i].setIcon(default_icon);
+  e.target.setIcon(red_icon);
+   }
+}
+
+function envoiformulaireecrit(e) {
+
+   var xhr = new XMLHttpRequest(); 
+
+   // on récupère le nom du pays
+   var ps = window.pays.value;
+   window.pays.textContent = ' ';
+ 
+   // requête au serveur
+   xhr.open('GET','/country/'+ps,true);
+  
+   // fonction callback
+   xhr.onload = function() {
+
+     // récupération des informations au format json
+     if ( this.status == 200 ) {
+       var data = JSON.parse(this.responseText);
+       window.error_msg.innerHTML = ''
+       window.country_data.style.display = 'block';
+       window.demandeinfo.style.display = 'block';
+       window.moreinfo.style.display = 'none';
+       window.lessinfo.style.display = 'none';
+       window.country_name.textContent = data.name;
+       window.capital.textContent = data.capital;
+       window.latitude.textContent = data.latitude.toFixed(3);
+       window.longitude.textContent = data.longitude.toFixed(3);
+       window.currency.textContent = data.currency;
+       window.area.textContent = data.area;
+       window.wp.textContent = 'https://en.wikipedia.org/wiki/'+data.wp;
+       window.wp.href = 'https://en.wikipedia.org/wiki/'+data.wp;
+       window.drapeau.src = data.drapeau;
+     }
+     // affichage d'un message d'erreur
+     else {
+        window.country_data.style.display = 'none';
+        window.error_msg.innerHTML = this.statusText;
+     }
+	 
+   //On met en surbrillance le marqueur du pays sélectionné
+   for (var i = 0; i<markers.length; i++) {
+	if (markers[i].idnum == ps){
+		markers[i].setIcon(red_icon);
+		map.setView([data.latitude,data.longitude], 3);
+	}
+	else {
+		markers[i].setIcon(default_icon);
+	}
+   }
+  };
+  xhr.send();
+}
+
+function envoiformulaireselect(e) {
+
+   var xhr = new XMLHttpRequest(); 
+
+   // on récupère le nom du pays
+   var ps = document.getElementById('pays_select').value;
+   
+   // requête au serveur
+   xhr.open('GET','/country/'+ps,true);
+  
+   // fonction callback
+   xhr.onload = function() {
+
+     // récupération des informations au format json
+     if ( this.status == 200 ) {
+
+       var data = JSON.parse(this.responseText);
+       window.error_msg.innerHTML = ''
+       window.country_data.style.display = 'block';
+       window.moreinfo.style.display = 'none';
+       window.lessinfo.style.display = 'none';
+       window.country_name.textContent = data.name;
+       window.capital.textContent = data.capital;
+       window.latitude.textContent = data.latitude.toFixed(3);
+       window.longitude.textContent = data.longitude.toFixed(3);
+       window.currency.textContent = data.currency;
+       window.area.textContent = data.area;
+       window.drapeau.src = data.drapeau;
+       window.wp.textContent = 'https://en.wikipedia.org/wiki/'+data.wp;
+       window.wp.href = 'https://en.wikipedia.org/wiki/'+data.wp;
+       
+     }
+     // affichage d'un message d'erreur
+     else {
+        window.country_data.style.display = 'none';
+        window.error_msg.innerHTML = this.statusText;
+     }
+     //On met en surbrillance(rouge) le marqueur du pays sélectionné
+   for (var i = 0; i<markers.length; i++) {
+  if (markers[i].idnum == ps){
+    markers[i].setIcon(red_icon);
+    map.setView([data.latitude,data.longitude], 3);
+  }
+  else {
+    markers[i].setIcon(default_icon);
+  }
+   }
+  };
+  xhr.send();
+}
+function selectchoice(e) {
+  var choice = document.getElementById('select_type').value;
+  if (choice=='Recherche'){
+    window.searchbar.style.display = 'block'
+    window.pays_select_field.style.display = 'none'
+  }
+  else {
+    window.searchbar.style.display = 'none'
+    window.pays_select_field.style.display = 'block'
+  }
+}
+function showinfo(e) {
+  window.moreinfo.style.display = 'block';
+  window.demandeinfo.style.display = 'none';
+  window.lessinfo.style.display = 'block';
+}
+function hideinfo(e) {
+  window.moreinfo.style.display = 'none';
+  window.demandeinfo.style.display = 'block';
+  window.lessinfo.style.display = 'none';
+}
+</script>
